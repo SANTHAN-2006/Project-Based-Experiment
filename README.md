@@ -42,15 +42,139 @@ From the HDL code given formulate the correct code  to divert the traffic to pa
    
 **Program:**
 
-/* Program to implement the given logic function and to verify its operations in quartus using Verilog programming. 
+## Program to implement the given logic function and to verify its operations in quartus using Verilog programming. 
 
-Developed by: RegisterNumber:*/
+## Developed by: K SANTHAN KUMAR
+## RegisterNumber: 212223240065
 
+
+```verilog
+module experiment (
+    input clk,           // Clock input
+    input reset,         // Reset input
+    output reg road1_g, // Green signal for Road 1
+    output reg road2_g, // Green signal for Road 2
+    output reg road3_g, // Green signal for Road 3
+    output reg road1_y, // Yellow signal for Road 1
+    output reg road2_y, // Yellow signal for Road 2
+    output reg road3_y  // Yellow signal for Road 3
+);
+
+// Define states
+parameter [1:0] S_IDLE = 2'b00;
+parameter [1:0] S_R1_G = 2'b01;
+parameter [1:0] S_R2_G = 2'b10;
+parameter [1:0] S_R3_G = 2'b11;
+
+// Define state register
+reg [1:0] state_reg;
+reg [3:0] count_reg;
+
+// Initial state
+always @ (posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        state_reg <= S_IDLE;
+        count_reg <= 0;
+    end
+    else
+    begin
+        case(state_reg)
+            S_IDLE: begin
+                count_reg <= count_reg + 1;
+                if (count_reg == 4'd4)
+                begin
+                    count_reg <= 0;
+                    state_reg <= S_R1_G;
+                end
+            end
+            S_R1_G: begin
+                count_reg <= count_reg + 1;
+                road1_g <= 1;
+                road2_g <= 0;
+                road3_g <= 0;
+                if (count_reg == 4'd4)
+                begin
+                    count_reg <= 0;
+                    state_reg <= S_R2_G;
+                end
+            end
+            S_R2_G: begin
+                count_reg <= count_reg + 1;
+                road1_g <= 0;
+                road2_g <= 1;
+                road3_g <= 0;
+                if (count_reg == 4'd4)
+                begin
+                    count_reg <= 0;
+                    state_reg <= S_R3_G;
+                end
+            end
+            S_R3_G: begin
+                count_reg <= count_reg + 1;
+                road1_g <= 0;
+                road2_g <= 0;
+                road3_g <= 1;
+                if (count_reg == 4'd4)
+                begin
+                    count_reg <= 0;
+                    state_reg <= S_IDLE;
+                end
+            end
+        endcase
+    end
+end
+
+// Yellow signals logic
+always @ (posedge clk or posedge reset)
+begin
+    if (reset)
+    begin
+        road1_y <= 0;
+        road2_y <= 0;
+        road3_y <= 0;
+    end
+    else
+    begin
+        case(state_reg)
+            S_IDLE: begin
+                if (count_reg >= 4'd1 && count_reg <= 4'd4)
+                    road1_y <= 1;
+                else
+                    road1_y <= 0;
+            end
+            S_R1_G, S_R2_G, S_R3_G: begin
+                if (count_reg >= 4'd1 && count_reg <= 4'd4)
+                begin
+                    road1_y <= 1;
+                    road2_y <= 1;
+                    road3_y <= 1;
+                end
+                else
+                begin
+                    road1_y <= 0;
+                    road2_y <= 0;
+                    road3_y <= 0;
+                end
+            end
+        endcase
+    end
+end
+
+endmodule
+
+```
 **RTL Schematic**
+
+![image](https://github.com/SANTHAN-2006/Project-Based-Experiment/assets/80164014/e6fce610-da96-4b7f-ac62-24d1efddf259)
+
 
 **Output Timing Waveform**
 
 **Result:**
+Thus the design and simulate the traffic light controller are successfullt executed.
+
 
 
 
